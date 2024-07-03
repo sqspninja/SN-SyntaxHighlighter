@@ -5,12 +5,6 @@
  */
 
 (function() {
-    const cssUrls = [
-        "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css",
-        "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css",
-        "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css"
-    ];
-
     const scriptUrls = [
         "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js",
         "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js",
@@ -19,31 +13,22 @@
         "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/show-language/prism-show-language.min.js"
     ];
 
-    function loadCSS(url) {
-        return new Promise((resolve, reject) => {
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = url;
-            link.onload = resolve;
-            link.onerror = reject;
-            document.head.appendChild(link);
-        });
+    let scriptsLoaded = 0;
+
+    function scriptLoaded() {
+        scriptsLoaded++;
+        if (scriptsLoaded === scriptUrls.length) {
+            initializePrism();
+        }
     }
 
-    function loadScript(url) {
-        return new Promise((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = url;
-            script.onload = resolve;
-            script.onerror = reject;
-            document.head.appendChild(script);
-        });
-    }
-
-    Promise.all(cssUrls.map(loadCSS))
-        .then(() => Promise.all(scriptUrls.map(loadScript)))
-        .then(initializePrism)
-        .catch(err => console.error('Error loading resources:', err));
+    scriptUrls.forEach((url) => {
+        const script = document.createElement('script');
+        script.src = url;
+        script.onload = scriptLoaded;
+        script.onerror = () => console.error(`Failed to load script: ${url}`);
+        document.head.appendChild(script);
+    });
 
     function initializePrism() {
         Prism.plugins.toolbar.registerButton('copy-to-clipboard', function (env) {

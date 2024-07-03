@@ -1,0 +1,10 @@
+/* prism-styles.css */
+
+/* Prism.js Theme */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css');
+
+/* Prism.js Line Numbers Plugin */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css');
+
+/* Prism.js Toolbar Plugin */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css');
