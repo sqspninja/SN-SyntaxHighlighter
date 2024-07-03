@@ -4,19 +4,6 @@
  * https://prismjs.com/
  */
 
-function escapeHTML() {
-    document.querySelectorAll('.sqs-block-code pre code').forEach((element) => {
-        let html = element.innerHTML;
-        let escapedHTML = html
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#39;");
-        element.innerHTML = escapedHTML;
-    });
-}
-document.addEventListener('DOMContentLoaded', escapeHTML);
 (function() {
     const scriptUrls = [
         "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js",
@@ -25,12 +12,25 @@ document.addEventListener('DOMContentLoaded', escapeHTML);
         "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js",
         "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/show-language/prism-show-language.min.js"
     ];
+
+    let scriptsLoaded = 0;
+
+    function scriptLoaded() {
+        scriptsLoaded++;
+        if (scriptsLoaded === scriptUrls.length) {
+            initializePrism();
+        }
+    }
+
     scriptUrls.forEach((url) => {
         const script = document.createElement('script');
         script.src = url;
+        script.onload = scriptLoaded;
+        script.onerror = () => console.error(`Failed to load script: ${url}`);
         document.head.appendChild(script);
     });
-    window.addEventListener('load', () => {
+
+    function initializePrism() {
         Prism.plugins.toolbar.registerButton('copy-to-clipboard', function (env) {
             var button = document.createElement('button');
             button.textContent = 'Copy';
@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded', escapeHTML);
             });
             return button;
         });
+
         Prism.plugins.toolbar.registerButton('show-language', function (env) {
             var pre = env.element.parentNode;
             if (!pre || !/pre/i.test(pre.nodeName)) {
@@ -60,5 +61,23 @@ document.addEventListener('DOMContentLoaded', escapeHTML);
             label.textContent = language.toUpperCase();
             return label;
         });
-    });
+
+        Prism.highlightAll();
+
+        // Run the escapeHTML function after Prism.js has finished highlighting
+        escapeHTML();
+    }
+
+    function escapeHTML() {
+        document.querySelectorAll('.sqs-block-code pre code').forEach((element) => {
+            let html = element.innerHTML;
+            let escapedHTML = html
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+            element.innerHTML = escapedHTML;
+        });
+    }
 })();
