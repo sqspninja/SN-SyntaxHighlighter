@@ -18,6 +18,7 @@
     function scriptLoaded() {
         scriptsLoaded++;
         if (scriptsLoaded === scriptUrls.length) {
+            wrapCodeElements(); // Wrap content in <code> elements and add classes
             initializePrism();
         }
     }
@@ -29,6 +30,20 @@
         script.onerror = () => console.error(`Failed to load script: ${url}`);
         document.head.appendChild(script);
     });
+
+    function wrapCodeElements() {
+        document.querySelectorAll('.sqs-block-code pre').forEach((preElement) => {
+            const codeElement = document.createElement('code');
+            codeElement.className = 'language-html'; // Set the appropriate language class
+
+            // Transfer the escaped HTML content to the <code> element
+            codeElement.innerHTML = preElement.innerHTML;
+
+            // Clear the <pre> element and append the <code> element inside it
+            preElement.innerHTML = '';
+            preElement.appendChild(codeElement);
+        });
+    }
 
     function initializePrism() {
         Prism.plugins.toolbar.registerButton('copy-to-clipboard', function (env) {
@@ -63,21 +78,5 @@
         });
 
         Prism.highlightAll();
-
-        // Run the escapeHTML function after Prism.js has finished highlighting
-        escapeHTML();
-    }
-
-    function escapeHTML() {
-        document.querySelectorAll('.sqs-block-code pre code').forEach((element) => {
-            let html = element.innerHTML;
-            let escapedHTML = html
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#39;");
-            element.innerHTML = escapedHTML;
-        });
     }
 })();
