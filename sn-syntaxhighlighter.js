@@ -33,7 +33,6 @@
 
     function wrapCodeElements() {
         document.querySelectorAll('.sqs-block-code pre').forEach((preElement) => {
-            preElement.classList.add('line-numbers');
             const codeElement = document.createElement('code');
             codeElement.className = 'language-html'; // Set the appropriate language class
 
